@@ -42,4 +42,7 @@ client: bin build/client bin/client
 .PHONY: server
 server: bin build/server bin/server
 
-
+.PHONY: deps
+deps:
+	@sudo apt-get update
+	@sudo apt-get install git clang make libsdl2-dev libsdl2-net-dev
