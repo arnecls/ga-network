@@ -73,4 +73,6 @@ int main(int, char**) {
 
     SDLNet_Quit();
     SDL_Quit();
+
+	return 0;
 }
