@@ -3,65 +3,7 @@
 #include <cstdio>
 #include <string>
 
-std::string IPToString(const IPaddress& aIp) {
-    char out[22];
-    auto a = reinterpret_cast<const uint8_t*>(&aIp.host);
-    auto p = reinterpret_cast<const uint8_t*>(&aIp.port);
-    auto port = (p[0] << 8) | p[1];
-    sprintf(out, "%d.%d.%d.%d:%d", a[3], a[2], a[1], a[0], port);
-    return out;
-}
-
-bool DoSend(TCPsocket& sock) {
-    printf("sending request ...\n");
-    
-    auto req = "GET /200 HTTP/1.1\r\nHost: httpstat.us\r\n\r\n";
-    auto len = strlen(req)+1;
-
-    if (SDLNet_TCP_Send(sock, req, len) < len) {
-        printf("SDLNet_TCP_Send: %s\n", SDLNet_GetError());
-        return false;
-    }
-
-    return true;
-}
-
-void DoReceive(TCPsocket& sock) {
-    printf("waiting for response ...\n");
-    char buffer[4096];
-    memset(buffer, 0, sizeof(buffer));
-
-    SDLNet_TCP_Recv(sock, buffer, sizeof(buffer));
-    printf("\n%s\n", buffer);
-}
-
 bool DoTCP() {
-    IPaddress ip;
-    // DNS query
-    if (SDLNet_ResolveHost(&ip, "httpstat.us", 80) < 0) {
-        printf("SDLNet_ResolveHost: %s\n", SDLNet_GetError());
-        return false;
-    }
-    printf("httpstat.us resolved to %s\n", IPToString(ip).c_str());
-
-    // Open connection
-    auto sock = SDLNet_TCP_Open(&ip);
-    if(!sock) {
-        printf("SDLNet_TCP_Open: %s\n", SDLNet_GetError());
-        return false;
-    }
-
-    // Send request
-    if (!DoSend(sock)) {
-        return false;
-    }    
-
-    // Get response
-    DoReceive(sock);
-
-    // Close connection
-    printf("done ...\n");
-    SDLNet_TCP_Close(sock);
     return true;
 }
 
